@@ -6,8 +6,10 @@ RUN apt-get update -y \
   && apt-get install -y --no-install-recommends openssl ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
+ENV NEXT_TELEMETRY_DISABLED=1
+
 COPY package.json package-lock.json ./
-RUN npm install -g npm@11 && npm ci --no-audit --no-fund
+RUN npm ci --no-audit --no-fund --loglevel=http
 
 COPY . .
 
