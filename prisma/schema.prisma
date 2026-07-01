@@ -1,0 +1,238 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  FAMILY
+  CAREGIVER
+  ADMIN
+}
+
+enum Qualification {
+  RN
+  GNM
+  ANM
+  ATTENDANT
+}
+
+enum VerificationStatus {
+  UNSUBMITTED
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum CredentialType {
+  AADHAAR
+  COUNCIL_REG
+  POLICE
+  CERTIFICATE
+}
+
+enum CredentialStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum RequestStatus {
+  DRAFT
+  OPEN
+  CONNECTED
+  CLOSED
+}
+
+enum LeadStatus {
+  SENT
+  ACCEPTED
+  DECLINED
+}
+
+enum ConnectMethod {
+  PHONE
+}
+
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  name      String?
+  role      Role     @default(FAMILY)
+  createdAt DateTime @default(now())
+
+  caregiver    CaregiverProfile?
+  family       FamilyProfile?
+  careRequests CareRequest[]
+  reviewsGiven Review[]          @relation("ReviewAuthor")
+  consentLogs  ConsentLog[]
+  otps         OtpCode[]
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  consumed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  @@index([phone])
+}
+
+model FamilyProfile {
+  id     String  @id @default(cuid())
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String  @unique
+  area   String?
+  city   String  @default("Bengaluru")
+}
+
+model CaregiverProfile {
+  id                 String             @id @default(cuid())
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String             @unique
+  qualification      Qualification
+  councilName        String?
+  councilRegNo       String?
+  experienceYears    Int                @default(0)
+  bio                String?
+  city               String             @default("Bengaluru")
+  area               String?
+  lat                Float?
+  lng                Float?
+  languages          String[]
+  specialties        String[]
+  indicativeRate     Int?
+  onboardingStep     Int                @default(1)
+  verificationStatus VerificationStatus @default(UNSUBMITTED)
+  ratingAvg          Float              @default(0)
+  ratingCount        Int                @default(0)
+  createdAt          DateTime           @default(now())
+
+  credentials  Credential[]
+  availability Availability[]
+  leads        Lead[]
+  connections  Connection[]
+  reviews      Review[]       @relation("ReviewSubject")
+
+  @@index([city])
+  @@index([verificationStatus])
+}
+
+model Credential {
+  id          String           @id @default(cuid())
+  caregiver   CaregiverProfile @relation(fields: [caregiverId], references: [id], onDelete: Cascade)
+  caregiverId String
+  type        CredentialType
+  label       String
+  fileUrl     String?
+  status      CredentialStatus @default(PENDING)
+  reviewedBy  String?
+  reviewNote  String?
+  createdAt   DateTime         @default(now())
+
+  @@index([caregiverId])
+  @@index([status])
+}
+
+model Availability {
+  id          String           @id @default(cuid())
+  caregiver   CaregiverProfile @relation(fields: [caregiverId], references: [id], onDelete: Cascade)
+  caregiverId String
+  weekday     Int
+  block       String
+
+  @@unique([caregiverId, weekday, block])
+}
+
+model CareRequest {
+  id            String         @id @default(cuid())
+  family        User           @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  familyId      String
+  categories    String[]
+  tasks         String[]
+  qualification Qualification?
+  schedule      String?
+  city          String         @default("Bengaluru")
+  area          String?
+  lat           Float?
+  lng           Float?
+  budgetMin     Int?
+  budgetMax     Int?
+  notes         String?
+  status        RequestStatus  @default(OPEN)
+  createdAt     DateTime       @default(now())
+
+  leads       Lead[]
+  connections Connection[]
+
+  @@index([city])
+}
+
+model Lead {
+  id            String           @id @default(cuid())
+  careRequest   CareRequest      @relation(fields: [careRequestId], references: [id], onDelete: Cascade)
+  careRequestId String
+  caregiver     CaregiverProfile @relation(fields: [caregiverId], references: [id], onDelete: Cascade)
+  caregiverId   String
+  matchScore    Int              @default(0)
+  status        LeadStatus       @default(SENT)
+  createdAt     DateTime         @default(now())
+
+  @@unique([careRequestId, caregiverId])
+  @@index([caregiverId])
+}
+
+model Connection {
+  id            String           @id @default(cuid())
+  careRequest   CareRequest?     @relation(fields: [careRequestId], references: [id], onDelete: Cascade)
+  careRequestId String?
+  caregiver     CaregiverProfile @relation(fields: [caregiverId], references: [id], onDelete: Cascade)
+  caregiverId   String
+  familyId      String
+  method        ConnectMethod    @default(PHONE)
+  createdAt     DateTime         @default(now())
+
+  consentLogs ConsentLog[]
+  review      Review?
+
+  @@unique([careRequestId, caregiverId])
+  @@index([familyId])
+  @@index([caregiverId])
+}
+
+model ConsentLog {
+  id            String     @id @default(cuid())
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  connection    Connection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  connectionId  String
+  scope         String
+  purpose       String
+  policyVersion String
+  createdAt     DateTime   @default(now())
+
+  @@index([userId])
+}
+
+model Review {
+  id           String           @id @default(cuid())
+  connection   Connection       @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  connectionId String           @unique
+  author       User             @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId     String
+  caregiver    CaregiverProfile @relation("ReviewSubject", fields: [caregiverId], references: [id], onDelete: Cascade)
+  caregiverId  String
+  rating       Int
+  text         String?
+  createdAt    DateTime         @default(now())
+
+  @@index([caregiverId])
+}

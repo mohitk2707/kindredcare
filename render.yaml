@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: kindred-care
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install && npx prisma migrate deploy && node prisma/seed.mjs && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: NODE_VERSION
+        value: "22"
