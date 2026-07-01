@@ -16,4 +16,4 @@ RUN npx prisma generate && npm run build
 ENV PORT=3000
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node prisma/seed.mjs && npm start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node prisma/seed.mjs && npx next start -p 3000"]
