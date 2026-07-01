@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate",
     "deploy:migrate": "prisma migrate deploy",
     "seed": "node prisma/seed.mjs"
   },
