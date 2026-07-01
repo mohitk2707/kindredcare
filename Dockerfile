@@ -8,8 +8,8 @@ RUN apt-get update -y \
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund --loglevel=http
+COPY package.json package-lock.json .npmrc ./
+RUN npm ci --no-audit --no-fund
 
 COPY . .
 
