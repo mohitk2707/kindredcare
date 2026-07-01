@@ -50,11 +50,17 @@ export function LoginForm({ intent, next }: { intent: string; next: string }) {
           maxLength={6}
           placeholder="6-digit code"
           className="input num tracking-[0.4em] text-lg"
+          defaultValue={otpState.devCode ?? ""}
+          key={otpState.devCode ?? "code"}
           required
         />
-        <p className="text-xs text-faint mt-2">
-          Dev mode: the code is printed in the server console.
-        </p>
+        {otpState.devCode ? (
+          <p className="text-xs mt-2 rounded-md px-2.5 py-1.5" style={{ background: "var(--color-warn-soft)", color: "var(--color-warn)" }}>
+            Dev mode — no SMS is sent. Your code is <b className="num">{otpState.devCode}</b> (already filled in). Just tap Verify.
+          </p>
+        ) : (
+          <p className="text-xs text-faint mt-2">A one-time code was sent to your phone.</p>
+        )}
       </div>
       {verifyState.error && <p className="text-sm text-warn">{verifyState.error}</p>}
       <button className="btn btn-primary" disabled={verifying}>

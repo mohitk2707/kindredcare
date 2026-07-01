@@ -7,14 +7,14 @@ import { issueOtp, verifyOtp, normalizePhone } from "@/lib/otp";
 import { roleHome } from "@/lib/roles";
 import type { Role } from "@prisma/client";
 
-export type OtpState = { ok?: boolean; phone?: string; error?: string };
+export type OtpState = { ok?: boolean; phone?: string; error?: string; devCode?: string };
 export type VerifyState = { error?: string };
 
 export async function requestOtpAction(_prev: OtpState, formData: FormData): Promise<OtpState> {
   const phone = normalizePhone(String(formData.get("phone") ?? ""));
   if (!phone) return { error: "Enter a valid 10-digit Indian mobile number." };
-  await issueOtp(phone);
-  return { ok: true, phone };
+  const code = await issueOtp(phone);
+  return { ok: true, phone, devCode: process.env.NODE_ENV !== "production" ? code : undefined };
 }
 
 export async function verifyOtpAction(_prev: VerifyState, formData: FormData): Promise<VerifyState> {

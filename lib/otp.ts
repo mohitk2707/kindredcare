@@ -16,7 +16,7 @@ function generateCode(): string {
   return code;
 }
 
-export async function issueOtp(phone: string): Promise<void> {
+export async function issueOtp(phone: string): Promise<string> {
   const code = generateCode();
   const expiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000);
   await db.otpCode.create({ data: { phone, code, expiresAt } });
@@ -26,6 +26,7 @@ export async function issueOtp(phone: string): Promise<void> {
   } else {
     await sendSms(phone, code);
   }
+  return code;
 }
 
 export async function verifyOtp(phone: string, code: string): Promise<boolean> {
