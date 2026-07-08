@@ -16,7 +16,7 @@ export default function PrivacyPage() {
       <h2>What we collect</h2>
       <ul>
         <li><strong>Families:</strong> your name, mobile number, and the details of your care request (care type, schedule, area, budget, and notes you choose to add).</li>
-        <li><strong>Caregivers:</strong> your name, mobile number, qualification, nursing-council registration number, experience, languages, rates, and the verification documents you upload (Aadhaar/ID, council registration, police verification, certificates).</li>
+        <li><strong>Caregivers:</strong> your name, mobile number, qualification, nursing-council registration number, experience, languages, rates, and the verification documents you upload (Aadhaar/ID, council registration, certificates).</li>
         <li><strong>Usage:</strong> basic logs needed to run and secure the service.</li>
       </ul>
 

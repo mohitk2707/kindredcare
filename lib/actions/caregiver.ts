@@ -65,7 +65,6 @@ export async function saveCredentials(formData: FormData): Promise<void> {
   const uploads: { type: CredentialType; label: string; field: string }[] = [
     { type: "AADHAAR", label: "Aadhaar / Govt ID", field: "file_aadhaar" },
     { type: "COUNCIL_REG", label: "Nursing council registration", field: "file_council" },
-    { type: "POLICE", label: "Police verification", field: "file_police" },
     { type: "CERTIFICATE", label: "Additional certificate", field: "file_cert" },
   ];
 

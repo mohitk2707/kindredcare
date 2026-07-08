@@ -1,7 +1,7 @@
 import type { CredentialType, Qualification } from "@prisma/client";
 
 export function requiredCredentialTypes(qualification: Qualification): CredentialType[] {
-  const base: CredentialType[] = ["AADHAAR", "POLICE"];
+  const base: CredentialType[] = ["AADHAAR"];
   if (qualification !== "ATTENDANT") base.push("COUNCIL_REG");
   return base;
 }

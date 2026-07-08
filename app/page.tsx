@@ -95,7 +95,7 @@ export default function HomePage() {
             title="🩺 For caregivers"
             steps={[
               ["Build your profile", "credentials, specialties, and indicative rates."],
-              ["Get verified", "Aadhaar, nursing-council registration, police check."],
+              ["Get verified", "Aadhaar and nursing-council registration."],
               ["Receive leads free", "respond to families whose needs match your skills."],
             ]}
             cta={{ href: "/onboarding/caregiver", label: "Register as a caregiver", accent: true }}

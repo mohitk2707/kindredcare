@@ -70,7 +70,6 @@ async function main() {
     await db.credential.deleteMany({ where: { caregiverId: profile.id } });
     const creds = [{ type: "AADHAAR", label: "Aadhaar / Govt ID" }];
     if (c.councilRegNo) creds.push({ type: "COUNCIL_REG", label: "Nursing council registration" });
-    creds.push({ type: "POLICE", label: "Police verification" });
     for (const cr of creds) {
       await db.credential.create({ data: { caregiverId: profile.id, type: cr.type, label: cr.label, status: "VERIFIED" } });
     }

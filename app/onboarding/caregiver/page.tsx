@@ -110,7 +110,6 @@ export default async function OnboardingPage({
                 </div>
                 <DocUpload name="file_aadhaar" label="Aadhaar / Govt ID" initialUrl={credUrl("AADHAAR")} />
                 <DocUpload name="file_council" label="Nursing council registration" hint="Skip if you are a non-clinical attendant" initialUrl={credUrl("COUNCIL_REG")} />
-                <DocUpload name="file_police" label="Police verification" initialUrl={credUrl("POLICE")} />
                 <DocUpload name="file_cert" label="Additional certificate (optional)" hint="BLS, CPR, specialty certificates" initialUrl={credUrl("CERTIFICATE")} />
               </div>
               <Actions primaryLabel="Submit & continue →" backStep={2} />
